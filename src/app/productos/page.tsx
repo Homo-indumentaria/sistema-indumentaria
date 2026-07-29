@@ -60,9 +60,14 @@ export default function ProductosPage() {
             Catálogo, variantes por talle/color y control de inventario.
           </p>
         </div>
-        <Link href="/productos/nuevo">
-          <Button>+ Nuevo producto</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/productos/importar">
+            <Button variante="secundario">Importar de KIBOO</Button>
+          </Link>
+          <Link href="/productos/nuevo">
+            <Button>+ Nuevo producto</Button>
+          </Link>
+        </div>
       </header>
 
       <div className="mb-6">
