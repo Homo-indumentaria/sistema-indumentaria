@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/*
+  Sistema de Gestión — Indumentaria Masculina
+  Paleta: sobria, orientada a uso diario prolongado en un mostrador
+  (no debe cansar la vista tras horas de uso). Un solo acento de color
+  reservado para llamados a la acción y alertas de stock.
+*/
+:root {
+  --color-fondo: #f7f7f5;
+  --color-superficie: #ffffff;
+  --color-borde: #e2e2df;
+  --color-texto: #1c1c1a;
+  --color-texto-suave: #6b6b66;
+  --color-acento: #1f4d3e; /* verde botella oscuro: sobrio, no generico */
+  --color-acento-suave: #e8f0ec;
+  --color-alerta: #b3492b; /* terracota rojizo para stock bajo/errores */
+  --color-alerta-suave: #fbeae4;
+
+  --fuente-display: "Fraunces", ui-serif, Georgia, serif;
+  --fuente-cuerpo: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --fuente-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-cuerpo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
