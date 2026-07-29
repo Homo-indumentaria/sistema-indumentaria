@@ -35,18 +35,24 @@ En el SQL Editor de Supabase, ejecutá en orden:
 2. `supabase/migrations/0002_vinculo_usuarios_auth.sql`
 
 ### 4. Crear tus usuarios (dueño y encargada)
-En el panel de Supabase: Authentication > Users > "Add user" > "Create new user".
-Al crearlo, en "User Metadata" (formato JSON) agregá el rol y el nombre, por ejemplo:
-```json
-{ "nombre": "Pablo", "rol": "dueno" }
+Este paso tiene 2 partes: crear el login en Supabase Auth, y decirle al
+sistema qué rol tiene esa persona (dueño / encargada).
+
+**Parte A — crear el login:**
+1. Panel de Supabase → Authentication → Users → "Add user" → "Create new user".
+2. Cargá email y contraseña.
+3. Asegurate de tildar **"Auto confirm user?"**.
+4. "Create user".
+
+**Parte B — asignar el rol:**
+En el SQL Editor, ejecutá (cambiando el email y el nombre según corresponda):
+```sql
+insert into usuarios (auth_user_id, nombre, email, rol)
+select id, 'Nombre de la persona', email, 'dueno'  -- o 'encargada' para la empleada
+from auth.users
+where email = 'el-email-que-usaste@ejemplo.com';
 ```
-o para tu empleada:
-```json
-{ "nombre": "Nombre de tu encargada", "rol": "encargada" }
-```
-La migración 0002 crea automáticamente la fila correspondiente en la tabla
-`usuarios` con ese rol apenas creás el usuario — no hace falta ningún paso
-manual adicional.
+Repetí la Parte A y B para cada persona que vaya a usar el sistema.
 
 ### 5. Correr el proyecto
 ```bash
