@@ -33,6 +33,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-clave-publica-anon
 En el SQL Editor de Supabase, ejecutá en orden:
 1. `supabase/migrations/0001_productos_stock.sql`
 2. `supabase/migrations/0002_vinculo_usuarios_auth.sql`
+3. `supabase/migrations/0003_fix_trigger_usuarios.sql`
+4. `supabase/migrations/0004_fix_rls_sucursales.sql`
+5. `supabase/migrations/0005_ventas.sql`
 
 ### 4. Crear tus usuarios (dueño y encargada)
 Este paso tiene 2 partes: crear el login en Supabase Auth, y decirle al
@@ -75,12 +78,30 @@ src/proxy.ts                -> protección de rutas (requiere sesión iniciada)
 supabase/migrations/        -> esquema de base de datos versionado
 ```
 
-## Qué falta para dar el módulo por completo
-- Importador del Excel de KIBOO para migrar tu catálogo actual.
-- Restringir en la interfaz lo que ve la encargada según el rol (hoy el rol
-  se muestra pero no hay ninguna pantalla que deba ocultársele todavía —
-  eso cobra sentido cuando sumemos reportes/caja).
-- Pruebas automatizadas de los cálculos de precio y de los movimientos de stock.
+## Módulo de Ventas (punto de venta)
+
+- Pantalla `/ventas`: se tipea el código interno del producto, se arma el
+  carrito, se elige el medio de pago (el descuento de efectivo/transferencia
+  se aplica solo) y se cobra.
+- El precio de cada ítem lo toma el servidor desde la base de datos en el
+  momento de cobrar — nunca confía en un precio que venga del navegador.
+- La venta completa (crear la venta + sus ítems + descontar stock) es
+  **atómica**: si falta stock de cualquier ítem, se cancela toda la venta,
+  nunca queda una venta a medias.
+- `/ventas/historial`: listado de ventas con su estado y estado de
+  facturación.
+- Detalle de venta (`/ventas/[id]`): permite registrar cambios (por otro
+  producto) o devoluciones sobre esa venta puntual.
+- **Facturación**: por ahora las ventas que no son en efectivo quedan
+  marcadas como "pendiente de facturar". La conexión real con ARCA (con
+  tu certificado) queda para una próxima etapa.
+
+## Qué falta para dar el módulo de Ventas por completo
+- Conexión real con ARCA para emitir la factura electrónica de las ventas
+  marcadas como "pendiente".
+- Reportes de ventas por día/medio de pago (útil para el arqueo de caja,
+  que es otro módulo futuro).
+
 
 ## Notas técnicas importantes
 - El precio que se guarda en cada venta futura será "fotografiado" (no

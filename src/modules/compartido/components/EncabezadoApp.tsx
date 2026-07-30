@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/modules/compartido/components/Badge";
 
 export function EncabezadoApp() {
   const router = useRouter();
+  const pathname = usePathname();
   const [email, setEmail] = useState<string | null>(null);
   const [rol, setRol] = useState<string | null>(null);
 
@@ -34,9 +36,33 @@ export function EncabezadoApp() {
   return (
     <header className="border-b border-[var(--color-borde)] bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <span className="font-[var(--fuente-display)] text-lg font-semibold">
-          Indumentaria — Gestión
-        </span>
+        <div className="flex items-center gap-6">
+          <span className="font-[var(--fuente-display)] text-lg font-semibold">
+            Indumentaria — Gestión
+          </span>
+          <nav className="flex gap-4 text-sm">
+            <Link
+              href="/productos"
+              className={
+                pathname?.startsWith("/productos")
+                  ? "font-medium text-[var(--color-acento)]"
+                  : "text-[var(--color-texto-suave)] hover:text-[var(--color-texto)]"
+              }
+            >
+              Productos
+            </Link>
+            <Link
+              href="/ventas"
+              className={
+                pathname?.startsWith("/ventas")
+                  ? "font-medium text-[var(--color-acento)]"
+                  : "text-[var(--color-texto-suave)] hover:text-[var(--color-texto)]"
+              }
+            >
+              Ventas
+            </Link>
+          </nav>
+        </div>
         <div className="flex items-center gap-3 text-sm">
           {email && (
             <>

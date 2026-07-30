@@ -15,6 +15,10 @@ export type TipoMovimientoStock =
   | "venta"
   | "ajuste_manual"
   | "devolucion";
+export type MedioPagoVenta = "efectivo" | "transferencia" | "debito" | "credito" | "qr";
+export type EstadoVenta = "completada" | "anulada" | "con_cambio";
+export type EstadoFacturaVenta = "no_aplica" | "pendiente" | "emitida" | "error";
+export type TipoCambioDevolucion = "cambio" | "devolucion";
 
 export interface Database {
   public: {
@@ -185,8 +189,117 @@ export interface Database {
         >;
         Relationships: [];
       };
+      ventas: {
+        Row: {
+          id: string;
+          numero_venta: number;
+          fecha: string;
+          sucursal_id: string;
+          usuario_id: string | null;
+          medio_pago: MedioPagoVenta;
+          descuento_porcentaje: number;
+          subtotal: number;
+          total: number;
+          estado: EstadoVenta;
+          requiere_factura: boolean;
+          estado_factura: EstadoFacturaVenta;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          numero_venta?: number;
+          fecha?: string;
+          sucursal_id: string;
+          usuario_id?: string | null;
+          medio_pago: MedioPagoVenta;
+          descuento_porcentaje?: number;
+          subtotal: number;
+          total: number;
+          estado?: EstadoVenta;
+          requiere_factura?: boolean;
+          estado_factura?: EstadoFacturaVenta;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["ventas"]["Insert"]>;
+        Relationships: [];
+      };
+      venta_items: {
+        Row: {
+          id: string;
+          venta_id: string;
+          variante_id: string;
+          cantidad: number;
+          precio_unitario_venta: number;
+          subtotal: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          venta_id: string;
+          variante_id: string;
+          cantidad: number;
+          precio_unitario_venta: number;
+          subtotal: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["venta_items"]["Insert"]>;
+        Relationships: [];
+      };
+      cambios_devoluciones: {
+        Row: {
+          id: string;
+          venta_original_id: string;
+          tipo: TipoCambioDevolucion;
+          variante_devuelta_id: string;
+          cantidad_devuelta: number;
+          variante_nueva_id: string | null;
+          cantidad_nueva: number | null;
+          motivo: string | null;
+          usuario_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          venta_original_id: string;
+          tipo: TipoCambioDevolucion;
+          variante_devuelta_id: string;
+          cantidad_devuelta: number;
+          variante_nueva_id?: string | null;
+          cantidad_nueva?: number | null;
+          motivo?: string | null;
+          usuario_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["cambios_devoluciones"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      registrar_venta: {
+        Args: {
+          p_sucursal_id: string;
+          p_usuario_id: string | null;
+          p_medio_pago: MedioPagoVenta;
+          p_descuento_porcentaje: number;
+          p_items: unknown;
+        };
+        Returns: string;
+      };
+      registrar_cambio_devolucion: {
+        Args: {
+          p_venta_original_id: string;
+          p_sucursal_id: string;
+          p_usuario_id: string | null;
+          p_tipo: TipoCambioDevolucion;
+          p_variante_devuelta_id: string;
+          p_cantidad_devuelta: number;
+          p_variante_nueva_id?: string | null;
+          p_cantidad_nueva?: number | null;
+          p_motivo?: string | null;
+        };
+        Returns: string;
+      };
+    };
   };
 }
