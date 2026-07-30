@@ -61,6 +61,9 @@ export default function ProductosPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href="/productos/corregir-precios">
+            <Button variante="secundario">Corregir precios</Button>
+          </Link>
           <Link href="/productos/importar">
             <Button variante="secundario">Importar de KIBOO</Button>
           </Link>
