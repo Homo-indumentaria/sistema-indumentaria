@@ -300,6 +300,16 @@ export interface Database {
         };
         Returns: string;
       };
+      corregir_precios_masivo: {
+        Args: {
+          p_items: unknown;
+        };
+        Returns: {
+          productosActualizados: number;
+          sinCoincidencia: number;
+          totalProcesados: number;
+        };
+      };
     };
   };
 }

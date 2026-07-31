@@ -6,24 +6,23 @@ import { parsearListadoProductos } from "@/modules/productos/lib/importadorKiboo
 import { Button } from "@/modules/compartido/components/Button";
 import { Badge } from "@/modules/compartido/components/Badge";
 
-type Resultado = {
-  nombre: string;
-  ok: boolean;
-  variantesActualizadas?: number;
-  error?: string;
-};
+interface ResumenCorreccion {
+  productosActualizados: number;
+  sinCoincidencia: number;
+  totalProcesados: number;
+}
 
 export default function CorregirPreciosPage() {
   const router = useRouter();
   const [procesando, setProcesando] = useState(false);
-  const [resultados, setResultados] = useState<Resultado[] | null>(null);
+  const [resumen, setResumen] = useState<ResumenCorreccion | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleArchivo(archivo: File | undefined) {
     if (!archivo) return;
     setProcesando(true);
     setError(null);
-    setResultados(null);
+    setResumen(null);
     try {
       const buffer = await archivo.arrayBuffer();
       const listado = parsearListadoProductos(buffer);
@@ -43,16 +42,13 @@ export default function CorregirPreciosPage() {
         setError(json.error ?? "No se pudo corregir los precios");
         return;
       }
-      setResultados(json.resultados);
+      setResumen(json.data);
     } catch {
       setError("No se pudo leer el archivo. Confirmá que sea el .xlsx del Listado de productos.");
     } finally {
       setProcesando(false);
     }
   }
-
-  const actualizados = resultados?.filter((r) => r.ok && (r.variantesActualizadas ?? 0) > 0) ?? [];
-  const sinCoincidencia = resultados?.filter((r) => !r.ok) ?? [];
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -66,7 +62,7 @@ export default function CorregirPreciosPage() {
         stock.
       </p>
 
-      {!resultados && (
+      {!resumen && (
         <section className="rounded-xl border border-[var(--color-borde)] bg-white p-5">
           <input
             type="file"
@@ -77,7 +73,7 @@ export default function CorregirPreciosPage() {
           />
           {procesando && (
             <p className="mt-3 text-sm text-[var(--color-texto-suave)]">
-              Procesando...
+              Procesando... (puede tardar unos segundos con archivos grandes)
             </p>
           )}
           {error && (
@@ -86,16 +82,21 @@ export default function CorregirPreciosPage() {
         </section>
       )}
 
-      {resultados && (
+      {resumen && (
         <>
           <section className="mb-6 rounded-xl border border-[var(--color-borde)] bg-white p-5">
-            <p className="mb-2">
-              <Badge variante="acento">{actualizados.length} productos actualizados</Badge>{" "}
-              {sinCoincidencia.length > 0 && (
+            <p className="mb-2 space-x-2">
+              <Badge variante="acento">
+                {resumen.productosActualizados} productos actualizados
+              </Badge>
+              {resumen.sinCoincidencia > 0 && (
                 <Badge variante="alerta">
-                  {sinCoincidencia.length} sin coincidencia en el sistema
+                  {resumen.sinCoincidencia} sin coincidencia en el sistema
                 </Badge>
               )}
+            </p>
+            <p className="text-xs text-[var(--color-texto-suave)]">
+              Total de filas procesadas del archivo: {resumen.totalProcesados}
             </p>
           </section>
           <Button onClick={() => router.push("/productos")}>
