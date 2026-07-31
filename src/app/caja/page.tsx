@@ -47,7 +47,7 @@ export default function CajaPage() {
   } | null>(null);
 
   const cargarCaja = useCallback(async () => {
-    const res = await fetch("/api/caja");
+    const res = await fetch("/api/caja", { cache: "no-store" });
     const json = await res.json();
     setCaja(json.data);
   }, []);
@@ -187,7 +187,7 @@ export default function CajaPage() {
           <input
             type="number"
             min={0}
-            value={saldoInicial}
+            value={saldoInicial || ""}
             onChange={(e) => setSaldoInicial(Number(e.target.value))}
             className="w-full rounded-lg border border-[var(--color-borde)] px-3 py-2 text-sm"
           />

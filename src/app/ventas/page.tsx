@@ -38,7 +38,7 @@ export default function VentasPage() {
 
   useEffect(() => {
     const h = setTimeout(() => {
-      fetch("/api/caja")
+      fetch("/api/caja", { cache: "no-store" })
         .then((res) => res.json())
         .then((json) => setCajaAbierta(!!json.data));
     }, 0);

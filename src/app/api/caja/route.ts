@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
+// Esta ruta refleja el estado de la caja en tiempo real (si hay una
+// abierta o no); nunca debe servirse desde una respuesta cacheada, o el
+// punto de venta podría mostrar "caja cerrada" justo después de abrirla.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function obtenerUsuarioIdYSucursal(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: sucursal } = await supabase
     .from("sucursales")
