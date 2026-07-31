@@ -61,6 +61,16 @@ export function EncabezadoApp() {
             >
               Ventas
             </Link>
+            <Link
+              href="/caja"
+              className={
+                pathname?.startsWith("/caja")
+                  ? "font-medium text-[var(--color-acento)]"
+                  : "text-[var(--color-texto-suave)] hover:text-[var(--color-texto)]"
+              }
+            >
+              Caja
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-3 text-sm">

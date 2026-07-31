@@ -36,6 +36,8 @@ En el SQL Editor de Supabase, ejecutá en orden:
 3. `supabase/migrations/0003_fix_trigger_usuarios.sql`
 4. `supabase/migrations/0004_fix_rls_sucursales.sql`
 5. `supabase/migrations/0005_ventas.sql`
+6. `supabase/migrations/0006_corregir_precios_masivo.sql`
+7. `supabase/migrations/0007_caja.sql`
 
 ### 4. Crear tus usuarios (dueño y encargada)
 Este paso tiene 2 partes: crear el login en Supabase Auth, y decirle al
@@ -96,11 +98,22 @@ supabase/migrations/        -> esquema de base de datos versionado
   marcadas como "pendiente de facturar". La conexión real con ARCA (con
   tu certificado) queda para una próxima etapa.
 
+## Módulo de Caja
+
+- `/caja`: abrís la caja con un saldo inicial, ves las ventas del día por
+  medio de pago, podés registrar retiros/ingresos manuales, y cerrar la
+  caja contando el efectivo real — el sistema calcula la diferencia sola.
+- **La venta exige una caja abierta**: si no abriste caja, el punto de
+  venta te manda directo a abrirla antes de dejarte vender. Esto evita
+  que una venta quede fuera de cualquier control de caja.
+- Solo puede haber **una caja abierta por vez** por sucursal.
+- `/caja/historial`: cajas anteriores, con su diferencia de cierre.
+
 ## Qué falta para dar el módulo de Ventas por completo
 - Conexión real con ARCA para emitir la factura electrónica de las ventas
   marcadas como "pendiente".
-- Reportes de ventas por día/medio de pago (útil para el arqueo de caja,
-  que es otro módulo futuro).
+- Reportes de ventas por día/medio de pago más detallados (más allá del
+  resumen que ya muestra la pantalla de Caja).
 
 
 ## Notas técnicas importantes

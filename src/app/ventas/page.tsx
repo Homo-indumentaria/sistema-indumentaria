@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Trash2, Search } from "lucide-react";
 import { Button } from "@/modules/compartido/components/Button";
@@ -34,6 +34,16 @@ export default function VentasPage() {
     requiere_factura: boolean;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [cajaAbierta, setCajaAbierta] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const h = setTimeout(() => {
+      fetch("/api/caja")
+        .then((res) => res.json())
+        .then((json) => setCajaAbierta(!!json.data));
+    }, 0);
+    return () => clearTimeout(h);
+  }, []);
 
   async function buscarYAgregar(e: React.FormEvent) {
     e.preventDefault();
@@ -152,6 +162,21 @@ export default function VentasPage() {
         <Button className="mt-6 w-full" onClick={() => setVentaConfirmada(null)}>
           Nueva venta
         </Button>
+      </main>
+    );
+  }
+
+  if (cajaAbierta === false) {
+    return (
+      <main className="mx-auto max-w-md px-4 py-16 text-center">
+        <div className="rounded-xl border border-[var(--color-borde)] bg-white p-8">
+          <p className="mb-4 text-sm text-[var(--color-texto-suave)]">
+            Todavía no abriste la caja hoy. Abrila antes de empezar a vender.
+          </p>
+          <Link href="/caja">
+            <Button className="w-full">Ir a abrir caja</Button>
+          </Link>
+        </div>
       </main>
     );
   }

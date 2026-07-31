@@ -19,6 +19,8 @@ export type MedioPagoVenta = "efectivo" | "transferencia" | "debito" | "credito"
 export type EstadoVenta = "completada" | "anulada" | "con_cambio";
 export type EstadoFacturaVenta = "no_aplica" | "pendiente" | "emitida" | "error";
 export type TipoCambioDevolucion = "cambio" | "devolucion";
+export type EstadoCaja = "abierta" | "cerrada";
+export type TipoMovimientoCaja = "retiro" | "ingreso";
 
 export interface Database {
   public: {
@@ -203,6 +205,7 @@ export interface Database {
           estado: EstadoVenta;
           requiere_factura: boolean;
           estado_factura: EstadoFacturaVenta;
+          caja_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -218,6 +221,7 @@ export interface Database {
           estado?: EstadoVenta;
           requiere_factura?: boolean;
           estado_factura?: EstadoFacturaVenta;
+          caja_id?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["ventas"]["Insert"]>;
@@ -273,6 +277,60 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["cambios_devoluciones"]["Insert"]>;
         Relationships: [];
       };
+      cajas: {
+        Row: {
+          id: string;
+          sucursal_id: string;
+          fecha_apertura: string;
+          saldo_inicial: number;
+          usuario_apertura_id: string | null;
+          fecha_cierre: string | null;
+          saldo_final_contado: number | null;
+          saldo_final_esperado: number | null;
+          diferencia: number | null;
+          usuario_cierre_id: string | null;
+          estado: EstadoCaja;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          sucursal_id: string;
+          fecha_apertura?: string;
+          saldo_inicial?: number;
+          usuario_apertura_id?: string | null;
+          fecha_cierre?: string | null;
+          saldo_final_contado?: number | null;
+          saldo_final_esperado?: number | null;
+          diferencia?: number | null;
+          usuario_cierre_id?: string | null;
+          estado?: EstadoCaja;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["cajas"]["Insert"]>;
+        Relationships: [];
+      };
+      movimientos_caja: {
+        Row: {
+          id: string;
+          caja_id: string;
+          tipo: TipoMovimientoCaja;
+          monto: number;
+          motivo: string;
+          usuario_id: string | null;
+          fecha: string;
+        };
+        Insert: {
+          id?: string;
+          caja_id: string;
+          tipo: TipoMovimientoCaja;
+          monto: number;
+          motivo: string;
+          usuario_id?: string | null;
+          fecha?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["movimientos_caja"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -309,6 +367,32 @@ export interface Database {
           sinCoincidencia: number;
           totalProcesados: number;
         };
+      };
+      abrir_caja: {
+        Args: {
+          p_sucursal_id: string;
+          p_usuario_id: string | null;
+          p_saldo_inicial: number;
+        };
+        Returns: string;
+      };
+      registrar_movimiento_caja: {
+        Args: {
+          p_caja_id: string;
+          p_usuario_id: string | null;
+          p_tipo: TipoMovimientoCaja;
+          p_monto: number;
+          p_motivo: string;
+        };
+        Returns: string;
+      };
+      cerrar_caja: {
+        Args: {
+          p_caja_id: string;
+          p_usuario_id: string | null;
+          p_saldo_contado: number;
+        };
+        Returns: unknown;
       };
     };
   };
